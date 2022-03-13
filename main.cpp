@@ -21,7 +21,7 @@ int main(int, char **)
     double Ly = 100.;
     double dl = 1.;
 
-    double tf = 1e-2, dt = 1e6;
+    double tf = 1e-2, dt = 0;
 
     int Nx = (int)Lx / dl;
     int Ny = (int)Ly / dl;
