@@ -20,11 +20,11 @@ void setvar(int i_Nx, int i_Ny, double i_dl, double i_dt)
 
     for (int i = 0; i < Ny; i++)
         ky[i] = (-1 + 2. / Ny * i) * pi_dl;
-
 }
 
 void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) // Applies the Uk operator to the arr matrix and gives the output out. This function modifies the input matrix and gives a non normalized version of it
 {
+    //Transformer en impulsion
     int i, j;
     for (i = 0; i < Nx; i++)
     {
@@ -40,15 +40,19 @@ void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) /
         }
     }
     fftw_execute(pl_f);
+    
+    double a, b;
 
     for (i = 0; i < Nx; i++)
     {
         kx_i2 = kx[i] * kx[i];
         for (j = 0; j < Ny; j++)
         {
+            a = proc[i + j * Ny][REAL];
+            b = proc[i + j * Ny][IMAG];
             kij2 = kx_i2 + ky[j] * ky[j];
-            proc[i + j * Ny][REAL] *= cos(-dt / 4. * kij2);
-            proc[i + j * Ny][IMAG] *= sin(-dt / 4. * kij2);
+            proc[i + j * Ny][REAL] = a * cos(-dt / 4. * kij2) - b * sin(-dt / 4. * kij2);
+            proc[i + j * Ny][IMAG] = a * sin(-dt / 4. * kij2) + b * cos(-dt / 4. * kij2);
         }
     }
     fftw_execute(pl_b);
@@ -69,6 +73,7 @@ void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) /
 
 void Uv(fftw_complex *arr, double *V)
 {
+    //transformer en position puis impulsion
     int i, j;
     double a, b;
     for (i = 0; i < Nx; i++)
@@ -81,18 +86,18 @@ void Uv(fftw_complex *arr, double *V)
             arr[i + j * Ny][IMAG] = a * sin(-V[i + j * Ny] * dt) + b * cos(-V[i + j * Ny] * dt);
         }
     }
+    // ==> impulsion
 }
 
 void normalize(fftw_complex *arr)
 {
-    
-    double sum =0;
+
+    double sum = 0;
     for (int i = 0; i < Nx; i++)
     {
         for (int j = 0; j < Ny; j++)
         {
-            sum += sqrt(arr[i + j * Ny][REAL] * arr[i + j * Ny][REAL] 
-            + arr[i + j * Ny][IMAG]*arr[i + j * Ny][IMAG]);
+            sum += sqrt(arr[i + j * Ny][REAL] * arr[i + j * Ny][REAL] + arr[i + j * Ny][IMAG] * arr[i + j * Ny][IMAG]);
         }
     }
 
@@ -109,4 +114,6 @@ void U_ev(fftw_complex *arr, double *V, fftw_complex *proc, fftw_plan pl_f, fftw
     Uk(arr, proc, pl_f, pl_b);
     Uv(arr, V);
     Uk(arr, proc, pl_f, pl_b);
+
+    //normalize with Nx*Ny
 }

@@ -21,7 +21,7 @@ int main(int, char **)
     double Ly = 100.;
     double dl = 1.;
 
-    double tf = 1e-2, dt = 1e8;
+    double tf = 50, dt = 5;
 
     int Nx = (int)Lx / dl;
     int Ny = (int)Ly / dl;
@@ -31,33 +31,42 @@ int main(int, char **)
     fftw_plan p_space_momentum = fftw_plan_dft_2d(Nx, Ny, Psi, Psi_p, FFTW_FORWARD, FFTW_MEASURE);
     fftw_plan p_momentum_space = fftw_plan_dft_2d(Nx, Ny, Psi_p, Psi, FFTW_BACKWARD, FFTW_MEASURE);
 
-    double sigma = 5; // Indirectly defines the correlation length between sites
-    double V0 = 1;
+    double sigma = 2; // Indirectly defines the correlation length between sites
+    double V0 = 0;
 
     double *V = (double *)malloc(Nx * Ny * sizeof(double));
 
     double r0[2] = {50, 50};
 
     // plane_wave(Psi, Nx, Ny, 1, k, dl, r0, 100);
-    double k0[2] = {0.1, 0.1};
-    gaussian_wavepacket(Psi, Nx, Ny, dl, r0, 10, k0);
+    double k0[2] = {0.1, 0.1}; /// ==> En impulsion Point qui vaut 1 et le reste 0 en impulsion pour Eikr
+    gaussian_wavepacket(Psi, Nx, Ny, dl, r0, 2, k0);
+    normalize(Psi);
 
     corr_pot(V, 0, sigma, Nx, Ny, dl);
 
     setvar(Nx, Ny, dl, dt);
-    
 
     U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);/*
     normalize(Psi);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
+    normalize(Psi);*/
 
-    /*
-        for (double t = 0; t < tf; t += dt)
-        {
-            U_ev(Psi, V, Psi_p, p_space_momentum, p_momentum_space);
-            if ((int)(tf - t) % 5 == 0)
-                normalize(Psi);
-        }
-    */
+    /* --------File Output----------*/
+    std::string filename;
+    std::ofstream file;
+
+    /*---------Video output parameters------*/
+    int fps = 24;
+
 
     std::ofstream pot_file("data/pot.dat", std::ios::trunc);
     if (pot_file.is_open() == false)
@@ -82,7 +91,7 @@ int main(int, char **)
             for (int j = 0; j < Ny; j++)
             {
                 pw_file << sqrt(Psi[i + j * Ny][REAL] * Psi[i + j * Ny][REAL] + Psi[i + j * Ny][IMAG] * Psi[i + j * Ny][IMAG]) << "\t";
-                //pw_file << Psi[i + j * Ny][REAL] << "\t" ;
+                // pw_file << Psi[i + j * Ny][REAL] << "\t" ;
             }
             pw_file << std::endl;
         }
