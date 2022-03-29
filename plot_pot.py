@@ -19,3 +19,5 @@ plt.show()
 #ax.scatter(X,Y,Z)
 
 #plt.savefig('img/pot_plot.png')
+
+#FIxer affichage de 0 - > Nx vers -Nx/2 -> Nx/2

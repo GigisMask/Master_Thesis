@@ -19,6 +19,21 @@ void plane_wave(fftw_complex *arr, int Nx, int Ny, double A, double *k, double d
     }
 }
 
+void plane_wave_momentum(fftw_complex *arr, int *k, int Nx, int Ny)
+{
+    for (int i = 0; i < Nx; i++)
+    {
+        for (int j = 0; j < Ny; j++)
+        {
+            arr[i + j * Ny][REAL] = (k[0]==i && k[1] == j);
+            arr[i + j * Ny][IMAG] = 0.;
+        }
+        
+    }
+    
+    arr[k[0] + k[1] * Ny][REAL] = 1.;
+}
+
 void gaussian_wavepacket(fftw_complex *arr, int Nx, int Ny, double dl, double *r0, double a, double *k0)
 {
     int ix_wave = (int)r0[0] / dl;
