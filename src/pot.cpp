@@ -30,7 +30,6 @@ void corr_pot(double *V, const double V0, double sigma, int Nx, int Ny, double d
 void random_values(double *wn, const double sigma, int Nx, int Ny)
 {
     gsl_rng *r = gsl_rng_alloc(gsl_rng_taus);
-
     for (int i = 0; i < Nx; i++)
         for (int j = 0; j < Ny; j++)
             wn[i + j * Ny] = gsl_ran_gaussian(r, sigma); // we suppose the random variate to be centered
