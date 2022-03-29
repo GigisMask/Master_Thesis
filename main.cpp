@@ -39,11 +39,11 @@ int main(int, char **)
     double r0[2] = {50, 50};
 
     // plane_wave(Psi, Nx, Ny, 1, k, dl, r0, 100);
-    //Corriger et fixer k phys et non pas k num
-     /// ==> En impulsion Point qui vaut 1 et le reste 0 en impulsion pour Eikr
+    // Corriger et fixer k phys et non pas k num
+    /// ==> En impulsion Point qui vaut 1 et le reste 0 en impulsion pour Eikr
 
-    double k[2] = {1,0};
-    int n0[2] = {(int) (Lx * k[0] / (2*M_PI) + Nx/2.), (int) (Ly * k[1] / (2*M_PI) + Ny/2.)};
+    double k[2] = {1, 0};
+    int n0[2] = {(int)(Lx * k[0] / (2 * M_PI) + Nx / 2.), (int)(Ly * k[1] / (2 * M_PI) + Ny / 2.)};
     plane_wave_momentum(Psi_p, n0, Nx, Ny);
 
     corr_pot(V, V0, sigma, Nx, Ny, dl);
@@ -59,61 +59,28 @@ int main(int, char **)
     /*---------Video output parameters------*/
     int fps = 24;
 
-    /*
-        std::ofstream pot_file("data/pot.dat", std::ios::trunc);
-        if (pot_file.is_open() == false)
-        {
-            std::cout << "cannot create the file" << std::endl;
-            return -5;
-        }
+    /*---------File output-----------------*/
+    std::ofstream ph_esp_file("data/phase_space_ev.dat", std::ios::trunc);
+    if (ph_esp_file.is_open())
+    {
+        ph_esp_file << Nx << "\t" << Ny << "\t" << dt << "\t" << tf << std::endl;
 
+        for (double t = 0; t < tf; t += dt)
+        {
+            for (int i = 0; i < Nx; i++)
+                for (int j = 0; j < Ny; j++)
+                    ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
+            ph_esp_file << std::endl;
+
+            Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
+        }
         for (int i = 0; i < Nx; i++)
-        {
             for (int j = 0; j < Ny; j++)
-                pot_file << V[i + j * Ny] << "\t";
-            pot_file << "\n";
-        }
-        pot_file.close();
-    */
-
-    /*
-
-     std::ofstream ph_esp_file("data/phase_space_ev.dat", std::ios::trunc);
-     if (ph_esp_file.is_open())
-     {
-         ph_esp_file << Nx << "\t" << Ny << "\t" << dt << "\t" << tf << std::endl;
-
-         for (double t = 0; t < tf; t += dt)
-         {
-             for (int i = 0; i < Nx; i++)
-                 for (int j = 0; j < Ny; j++)
-                     ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
-             ph_esp_file << std::endl;
-
-             Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
-         }
-
-         Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
-         ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
-         ph_esp_file << std::endl;
-     }
-     else
-         std::cout << "Error creating Psi file" << std::endl;
-     */
-
-    //
-    std::ofstream ph_esp_file("data/2d_planewave.dat", std::ios::trunc);
-    for (double t = 0; t < tf; t+=dt)
-    {
-        Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
-    }
-    
-    for (int i = 0; i < Nx; i++)
-    {
-        for (int j = 0; j < Ny; j++)
-            ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
+                ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
         ph_esp_file << std::endl;
     }
+    else
+        std::cout << "Error creating Psi file" << std::endl;
 
     free(V);
     fftw_free(Psi);
