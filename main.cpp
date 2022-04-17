@@ -35,7 +35,7 @@ int main(int argc, char **argv)
         Lx = 100; // voir pq lorsque L augmente il faut un tf plus grand
         Ly = 100;
         dl = 1;
-        tf = 50;
+        tf = 200;
         dt = 1;
         corr_len = 2; // Indirectly defines the correlation length between sites
         V0 = 0.1;

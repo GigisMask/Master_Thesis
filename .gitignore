@@ -32,5 +32,6 @@
 *.app
 
 data/
+img/
 build/
 /.vscode/
