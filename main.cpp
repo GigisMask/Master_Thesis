@@ -38,7 +38,7 @@ int main(int argc, char **argv)
         tf = 200;
         dt = 1;
         corr_len = 2; // Indirectly defines the correlation length between sites
-        V0 = 0.1;
+        V0 = 1;
         tot_frames = tf / dt;
     }
     else
@@ -85,9 +85,8 @@ int main(int argc, char **argv)
     fftw_plan pl_position_momentum = fftw_plan_dft_2d(Nx, Ny, Psi, Psi_p, FFTW_FORWARD, FFTW_MEASURE);
     fftw_plan pl_momentum_position = fftw_plan_dft_2d(Nx, Ny, Psi_p, Psi, FFTW_BACKWARD, FFTW_MEASURE);
     /*----------------Initial wavefunction------------------*/
-    double k[2] = {1, 0};
-    int n0[2] = {(int)(Lx * k[0] / (2 * M_PI) + Nx / 2.), (int)(Ly * k[1] / (2 * M_PI) + Ny / 2.)};
-    plane_wave_momentum(Psi_p, n0, Nx, Ny);
+    double k[2] = {1.5, 0};
+    plane_wave_momentum(Psi_p, k, Nx, Ny, dl);
     // plane_wave(Psi, Nx, Ny, 1, k, dl, r0, 100);
     // Corriger et fixer k phys et non pas k num
 

@@ -13,14 +13,14 @@ CURRENT_POOL_SIZE=0
 Lx="100"
 Ly="100"
 dl="1"
-tf="50"
+tf="1000"
 dt="1"
-corr_len="5.5"
-V0="0.25"
-tot_frames="50"
+corr_len="1"
+V0="1"
+tot_frames="1000"
 
 #Total jobs
-TOTAL_JOBS=12
+TOTAL_JOBS=1
 
 # This is a just a function to print the output as a log with timestamp
 _log() {
@@ -72,6 +72,7 @@ T2=$(date +%s)
 _log "All jobs completed in $((T2-T1)) seconds. Parent process exiting."
 _log "Computing mean..."
 computeMean $Lx $Ly $V0 $corr_len
+_log "Plotting mean..."
 python3 wavefunc_ev.py $Lx $Ly $V0 $corr_len
 _log "Final output is written in $OUTPUT"
 exit 0

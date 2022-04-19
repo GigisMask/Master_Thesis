@@ -10,7 +10,18 @@ def main(argv):
     y_size = int(argv[1])
     V0 = float(argv[2])
     corr_len = float(argv[3])
-    dataSpec = str(x_size) + "x" + str(y_size) + "_V0_" + str(V0) + "_" + str(corr_len)
+    strV0 = ''
+    strCorr_len = ''
+    if V0 == int(V0):
+        strV0 = str(int(V0))
+    else:
+        strV0 = str(V0)
+    
+    if corr_len == int(corr_len):
+        strCorr_len = str(int(corr_len))
+    else:
+        strCorr_len = str(corr_len)
+    dataSpec = str(x_size) + "x" + str(y_size) + "_V0_" + strV0 + "_" + strCorr_len
 
     Writer = animate.writers['ffmpeg']
     writer = Writer(fps=25, metadata=dict(artist='Me'), bitrate=2**16)

@@ -13,25 +13,23 @@ void plane_wave(fftw_complex *arr, int Nx, int Ny, double A, double *k, double d
     {
         for (int j = 0; j < Nx; j++)
         {
-            arr[i + j * Ny][REAL] = A * cos((k[0] * (i - ix_wave) + k[1] * (j - iy_wave)) * dl);
-            arr[i + j * Ny][IMAG] = A * sin((k[0] * (i - ix_wave) + k[1] * (j - iy_wave)) * dl);
+            arr[i + j * Nx][REAL] = A * cos((k[0] * (i - ix_wave) + k[1] * (j - iy_wave)) * dl);
+            arr[i + j * Nx][IMAG] = A * sin((k[0] * (i - ix_wave) + k[1] * (j - iy_wave)) * dl);
         }
     }
 }
 
-void plane_wave_momentum(fftw_complex *arr, int *k, int Nx, int Ny)
+void plane_wave_momentum(fftw_complex *arr, double *k, int Nx, int Ny, double dl)
 {
+    int n0[2] = {(int)(Nx * dl * k[0] / (2 * M_PI) + Nx / 2.), (int)(Ny * dl * k[1] / (2 * M_PI) + Ny / 2.)};
     for (int i = 0; i < Nx; i++)
     {
         for (int j = 0; j < Ny; j++)
         {
-            arr[i + j * Ny][REAL] = (k[0]==i && k[1] == j);
-            arr[i + j * Ny][IMAG] = 0.;
+            arr[i + j * Nx][REAL] = (n0[0] == i && n0[1] == j);
+            arr[i + j * Nx][IMAG] = 0.;
         }
-        
     }
-    
-    arr[k[0] + k[1] * Ny][REAL] = 1.;
 }
 
 void gaussian_wavepacket(fftw_complex *arr, int Nx, int Ny, double dl, double *r0, double a, double *k0)
@@ -44,11 +42,11 @@ void gaussian_wavepacket(fftw_complex *arr, int Nx, int Ny, double dl, double *r
         for (int j = 0; j < Ny; j++)
         {
             coeff = pow(2 * a * a * M_1_PI, 3. / 4.) * 1 / (a * a * a);
-            arr[i + j * Ny][REAL] =
+            arr[i + j * Nx][REAL] =
                 coeff *
                 exp(-1 / (a * a) * ((i - ix_wave) * (i - ix_wave) + (j - iy_wave) * (j - iy_wave)) * dl * dl) *
                 cos(k0[0] * (i - ix_wave) * dl + k0[1] * (j - iy_wave) * dl);
-            arr[i + j * Ny][IMAG] =
+            arr[i + j * Nx][IMAG] =
                 coeff *
                 exp(-1 / (a * a) * ((i - ix_wave) * (i - ix_wave) + (j - iy_wave) * (j - iy_wave)) * dl * dl) *
                 sin(k0[0] * (i - ix_wave) * dl + k0[1] * (j - iy_wave) * dl);

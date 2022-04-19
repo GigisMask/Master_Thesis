@@ -14,7 +14,19 @@ def main(argv):
     corr_len = float(argv[3])
 
     # name and path of the folder
-    dataSpec = str(x_size) + "x" + str(y_size) + "_V0_" + str(V0) + "_" + str(corr_len)
+    strV0 = ''
+    strCorr_len = ''
+    if V0 == int(V0):
+        strV0 = str(int(V0))
+    else:
+        strV0 = str(V0)
+    
+    if corr_len == int(corr_len):
+        strCorr_len = str(int(corr_len))
+    else:
+        strCorr_len = str(corr_len)
+    dataSpec = str(x_size) + "x" + str(y_size) + "_V0_" + strV0 + "_" + strCorr_len
+    
     dataPath = "data/" + dataSpec + "/"
     # Check how many files there are in the folder (excludes the debug file)
     files = [name for name in os.listdir(dataPath) if (
