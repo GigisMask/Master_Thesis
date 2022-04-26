@@ -49,7 +49,7 @@ def main(argv):
 
     plot = [ax.plot_surface(X, Y, Z[:, :, 0], color='0.75', rstride=1, cstride=1)]
 
-    ax.set_zlim(0, 1.1)
+    #ax.set_zlim(0, 1.1)
     ani = animate.FuncAnimation(fig, change_plot, frn,
                                 fargs=(Z, plot), interval=1000 / fps)
 

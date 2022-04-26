@@ -2,12 +2,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-pot = np.genfromtxt("data/2d_planewave.dat")
+pot = np.genfromtxt("data/100x100_V0_0.3_10/Mean/mean.dat")
 
 X = np.arange(0, 100, 1)
 Y = X
 X, Y = np.meshgrid(X, Y)
-Z =  pot
+Z =  pot[99].reshape(100,100)
 
 fig = plt.figure()
 ax = plt.axes()

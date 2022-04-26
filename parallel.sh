@@ -13,14 +13,14 @@ CURRENT_POOL_SIZE=0
 Lx="100"
 Ly="100"
 dl="1"
-tf="1000"
+tf="10000"
 dt="1"
-corr_len="1"
+corr_len="10"
 V0="1"
-tot_frames="1000"
+tot_frames="100"
 
 #Total jobs
-TOTAL_JOBS=1
+TOTAL_JOBS=12
 
 # This is a just a function to print the output as a log with timestamp
 _log() {
@@ -42,7 +42,6 @@ computeMean(){
 # Starting the timer
 T1=$(date +%s)
 
-# Reading the $JOB_LIST file, line by line
 i="1"
 while [ $i -le $TOTAL_JOBS ]; do
   

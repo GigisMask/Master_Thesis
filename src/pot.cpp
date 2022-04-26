@@ -1,6 +1,6 @@
 #include "pot.h"
 
-void corr_pot(double *V, const double V0, double sigma, int Nx, int Ny, double dl)
+void corr_pot(double *V, const double V0, double ksi, int Nx, int Ny, double dl)
 {
     double wn_sig = 1;
     double *wn = (double *)malloc(sizeof(double) * Nx * Ny);
@@ -18,8 +18,8 @@ void corr_pot(double *V, const double V0, double sigma, int Nx, int Ny, double d
             g = 0;
             for (int i = 0; i < Nx; i++)
                 for (int j = 0; j < Ny; j++)
-                    g += exp(-(((k - i) * dl) * ((k - i) * dl) + ((l - j) * dl) * ((l - j) * dl)) / (2 * sigma * sigma)) * wn[i + j * Ny];
-            g *= V0 / (SQRT_PI * sigma);
+                    g += exp(-((k - i) * (k - i) + (l - j) * (l - j)) * dl * dl / (2 * ksi * ksi)) * wn[i + j * Nx];
+            g *= V0 / (SQRT_PI * ksi);
 
             V[k + l * Nx] = g;
         }
@@ -33,6 +33,5 @@ void random_values(double *wn, const double sigma, int Nx, int Ny)
     for (int i = 0; i < Nx; i++)
         for (int j = 0; j < Ny; j++)
             wn[i + j * Nx] = gsl_ran_gaussian(r, sigma); // we suppose the random variate to be centered
-    // gsl_matrix_set(wn, i, j, gsl_ran_gaussian(r, sigma));
     gsl_rng_free(r);
 }

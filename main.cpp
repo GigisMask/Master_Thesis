@@ -111,22 +111,19 @@ int main(int argc, char **argv)
     /*---------------------File output---------------------*/
     if (ph_esp_file.is_open())
     {
-        for (double t = 0; t < tf; t += dt)
+        for (double t = 0; t <= tf; t += dt)
         {
-            if ((int)(t / dt) % (int)tf/tot_frames == 0)
+            if (((int)(t / dt)) % ((int)tf / tot_frames) == 0)
             {
                 for (int i = 0; i < Nx; i++)
                     for (int j = 0; j < Ny; j++)
-                        ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
+                        ph_esp_file << sqrt(Psi_p[i + j * Nx][REAL] * Psi_p[i + j * Nx][REAL] + Psi_p[i + j * Nx][IMAG] * Psi_p[i + j * Nx][IMAG]) << "\t";
                 ph_esp_file << std::endl;
+                //printf("%f\n", t);
             }
-
-            Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
+            if (t < tf)
+                Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
         }
-        for (int i = 0; i < Nx; i++)
-            for (int j = 0; j < Ny; j++)
-                ph_esp_file << sqrt(Psi_p[i + j * Ny][REAL] * Psi_p[i + j * Ny][REAL] + Psi_p[i + j * Ny][IMAG] * Psi_p[i + j * Ny][IMAG]) << "\t";
-        ph_esp_file << std::endl;
     }
     else
         std::cout << "Error creating output file" << std::endl;
