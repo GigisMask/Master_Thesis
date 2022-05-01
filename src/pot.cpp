@@ -18,7 +18,7 @@ void corr_pot(double *V, const double V0, double ksi, int Nx, int Ny, double dl)
             g = 0;
             for (int i = 0; i < Nx; i++)
                 for (int j = 0; j < Ny; j++)
-                    g += exp(-((k - i) * (k - i) + (l - j) * (l - j)) * dl * dl / (2 * ksi * ksi)) * wn[i + j * Nx];
+                    g += exp(-((i - (Nx + (Nx % 2)) / 2 - k) * (i - (Nx + (Nx % 2)) / 2 - k) + (j - (Ny + (Ny % 2)) / 2 - l) * (j - (Ny + (Ny % 2)) / 2 - l)) * dl * dl / (2 * ksi * ksi)) * wn[i + j * Nx];
             g *= V0 / (SQRT_PI * ksi);
 
             V[k + l * Nx] = g;

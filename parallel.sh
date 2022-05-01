@@ -16,11 +16,11 @@ dl="1"
 tf="10000"
 dt="1"
 corr_len="10"
-V0="1"
+V0="0.28"
 tot_frames="100"
 
 #Total jobs
-TOTAL_JOBS=12
+TOTAL_JOBS=120
 
 # This is a just a function to print the output as a log with timestamp
 _log() {
