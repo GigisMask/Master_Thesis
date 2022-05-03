@@ -27,11 +27,17 @@ void corr_pot(double *V, const double V0, double ksi, int Nx, int Ny, double dl)
     free(wn);
 }
 
-void random_values(double *wn, const double sigma, int Nx, int Ny)
+void random_values(double *wn, const double sigma, int Nx, int Ny, int V_Nx, int V_Ny)
 {
     gsl_rng *r = gsl_rng_alloc(gsl_rng_taus);
+    int iV_x = (int)(Nx - V_Nx) / 2.;
     for (int i = 0; i < Nx; i++)
         for (int j = 0; j < Ny; j++)
-            wn[i + j * Nx] = gsl_ran_gaussian(r, sigma); // we suppose the random variate to be centered
+        {
+            if (i > (int)(Nx - V_Nx) / 2. && i < (int)(Nx + V_Nx) / 2.)
+                wn[i + j * Nx] = gsl_ran_gaussian(r, sigma); // we suppose the random variate to be centered
+            else
+                wn[i + j * Nx] = 0.;
+        }
     gsl_rng_free(r);
 }
