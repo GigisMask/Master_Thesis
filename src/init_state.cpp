@@ -32,24 +32,26 @@ void plane_wave_momentum(fftw_complex *arr, double *k, int Nx, int Ny, double dl
     }
 }
 
-void gaussian_wavepacket(fftw_complex *arr, int Nx, int Ny, double dl, double *r0, double a, double *k0)
+void gaussian_wavepacket(fftw_complex *arr, double *k0, double *r0, double sigma, int Nx, int Ny, double dl)
 {
-    int ix_wave = (int)r0[0] / dl;
-    int iy_wave = (int)r0[1] / dl;
-    double coeff;
-    for (int i = 0; i < Nx; i++)
+    int i, j; // indices for the i-th and j-th elements of the matrix
+    double kx, ky;
+    double a, theta;
+    double Coeff = sqrt(2. / M_PI);
+    i = 0;
+    for (kx = -M_PI / dl; kx < M_PI / dl; kx += 2 * M_PI / (Nx * dl))
     {
-        for (int j = 0; j < Ny; j++)
+        j = 0;
+        for (ky = -M_PI / dl; ky < M_PI / dl; ky += 2 * M_PI / (Ny * dl))
         {
-            coeff = pow(2 * a * a * M_1_PI, 3. / 4.) * 1 / (a * a * a);
-            arr[i + j * Nx][REAL] =
-                coeff *
-                exp(-1 / (a * a) * ((i - ix_wave) * (i - ix_wave) + (j - iy_wave) * (j - iy_wave)) * dl * dl) *
-                cos(k0[0] * (i - ix_wave) * dl + k0[1] * (j - iy_wave) * dl);
-            arr[i + j * Nx][IMAG] =
-                coeff *
-                exp(-1 / (a * a) * ((i - ix_wave) * (i - ix_wave) + (j - iy_wave) * (j - iy_wave)) * dl * dl) *
-                sin(k0[0] * (i - ix_wave) * dl + k0[1] * (j - iy_wave) * dl);
+            // Amplitude and angle of the imaginary number
+            a = Coeff * exp(-1. / 4. * sigma * sigma * ((kx - k0[0]) * (kx - k0[0]) + (ky - k0[1]) * (ky - k0[1])));
+            theta = ((kx - k0[0]) * r0[0] + (ky - k0[1]) * r0[1]);
+            // Enter the values in the matrix
+            arr[i + j * Nx][REAL] = a * cos(theta);
+            arr[i + j * Nx][IMAG] = a * sin(theta);
+            j++;
         }
+        i++;
     }
 }

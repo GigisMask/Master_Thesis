@@ -1,13 +1,21 @@
+from cmath import pi
 import matplotlib.pyplot as plt
 import numpy as np
 from mpl_toolkits.mplot3d import Axes3D
 
-pot = np.genfromtxt("data/100x100_V0_0.3_10/Mean/mean.dat")
-
-X = np.arange(0, 100, 1)
-Y = X
+pot = np.genfromtxt("data/pot_out.dat")
+Nx = 100
+Ny = 100
+dl = 1
+position_space = 0
+if position_space==1:
+    X = np.arange(-Nx/2, Nx/2, dl)
+    Y = np.arange(-Ny/2, Ny/2, dl)
+else :
+    X = np.arange(-pi/dl, pi/dl, 2*pi/(Nx*dl))
+    Y = np.arange(-pi/dl, pi/dl, 2*pi/(Ny*dl))
 X, Y = np.meshgrid(X, Y)
-Z =  pot[99].reshape(100,100)
+Z =  pot #pot[99].reshape(100,100)
 
 fig = plt.figure()
 ax = plt.axes()
