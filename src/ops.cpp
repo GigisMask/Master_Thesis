@@ -35,8 +35,8 @@ void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) /
             else
                 sign = -1;
 
-            arr[i + j * Nx][REAL] *= sign;
-            arr[i + j * Nx][IMAG] *= sign;
+            arr[i*Ny + j][REAL] *= sign;
+            arr[i*Ny + j][IMAG] *= sign;
         }
     }
     fftw_execute(pl_f);
@@ -48,11 +48,11 @@ void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) /
         kx_i2 = kx[i] * kx[i];
         for (j = 0; j < Ny; j++)
         {
-            a = proc[i + j * Nx][REAL];
-            b = proc[i + j * Nx][IMAG];
+            a = proc[i*Ny + j][REAL];
+            b = proc[i*Ny + j][IMAG];
             kij2 = kx_i2 + ky[j] * ky[j];
-            proc[i + j * Nx][REAL] = a * cos(-dt / 4. * kij2) - b * sin(-dt / 4. * kij2);
-            proc[i + j * Nx][IMAG] = a * sin(-dt / 4. * kij2) + b * cos(-dt / 4. * kij2);
+            proc[i*Ny + j][REAL] = a * cos(-dt / 4. * kij2) - b * sin(-dt / 4. * kij2);
+            proc[i*Ny + j][IMAG] = a * sin(-dt / 4. * kij2) + b * cos(-dt / 4. * kij2);
         }
     }
     fftw_execute(pl_b);
@@ -65,8 +65,8 @@ void Uk(fftw_complex *arr, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b) /
             else
                 sign = -1;
 
-            arr[i + j * Nx][REAL] *= sign;
-            arr[i + j * Nx][IMAG] *= sign;
+            arr[i*Ny + j][REAL] *= sign;
+            arr[i*Ny + j][IMAG] *= sign;
         }
     }
 }
@@ -79,10 +79,10 @@ void Uv(fftw_complex *arr, double *V)
     {
         for (j = 0; j < Ny; j++)
         {
-            a = arr[i + j * Nx][REAL];
-            b = arr[i + j * Nx][IMAG];
-            arr[i + j * Nx][REAL] = a * cos(-V[i + j * Nx] * dt) - b * sin(-V[i + j * Nx] * dt);
-            arr[i + j * Nx][IMAG] = a * sin(-V[i + j * Nx] * dt) + b * cos(-V[i + j * Nx] * dt);
+            a = arr[i*Ny + j][REAL];
+            b = arr[i*Ny + j][IMAG];
+            arr[i*Ny + j][REAL] = a * cos(V[i*Ny + j] * dt) + b * sin(V[i*Ny + j] * dt);
+            arr[i*Ny + j][IMAG] = b * cos(V[i*Ny + j] * dt) - a * sin(V[i*Ny + j] * dt); 
         }
     }
 }
@@ -108,11 +108,11 @@ void Uk_p(fftw_complex *momentum_space) // Applies the Uk operator to the arr ma
         kx_i2 = kx[i] * kx[i];
         for (j = 0; j < Ny; j++)
         {
-            a = momentum_space[i + j * Nx][REAL];
-            b = momentum_space[i + j * Nx][IMAG];
+            a = momentum_space[i*Ny + j][REAL];
+            b = momentum_space[i*Ny + j][IMAG];
             kij2 = kx_i2 + ky[j] * ky[j];
-            momentum_space[i + j * Nx][REAL] = a * cos(-dt / 4. * kij2) - b * sin(-dt / 4. * kij2);
-            momentum_space[i + j * Nx][IMAG] = a * sin(-dt / 4. * kij2) + b * cos(-dt / 4. * kij2);
+            momentum_space[i*Ny + j][REAL] = a * cos(-dt / 4. * kij2) - b * sin(-dt / 4. * kij2);
+            momentum_space[i*Ny + j][IMAG] = a * sin(-dt / 4. * kij2) + b * cos(-dt / 4. * kij2);
         }
     }
 }
@@ -129,8 +129,8 @@ void Uv_p(fftw_complex *real_space, fftw_complex *momentum_space, double *V, fft
             else
                 sign = -1;
 
-            momentum_space[i + j * Nx][REAL] *= sign;
-            momentum_space[i + j * Nx][IMAG] *= sign;
+            momentum_space[i*Ny + j][REAL] *= sign;
+            momentum_space[i*Ny + j][IMAG] *= sign;
         }
     }
     fftw_execute(pl_momentum_position); // transformer en position
@@ -148,8 +148,8 @@ void Uv_p(fftw_complex *real_space, fftw_complex *momentum_space, double *V, fft
             else
                 sign = -1;
 
-            momentum_space[i + j * Nx][REAL] *= sign;
-            momentum_space[i + j * Nx][IMAG] *= sign;
+            momentum_space[i*Ny + j][REAL] *= sign;
+            momentum_space[i*Ny + j][IMAG] *= sign;
         }
     }
 }
@@ -163,7 +163,13 @@ void Uev_p(fftw_complex *momentum_space, fftw_complex *position_space, double *V
     for (int i = 0; i < Nx; i++) // Normalize
         for (int j = 0; j < Ny; j++)
         {
-            momentum_space[i + j * Nx][REAL] = 1. / (Nx * Ny) * momentum_space[i + j * Nx][REAL];
-            momentum_space[i + j * Nx][IMAG] = 1. / (Nx * Ny) * momentum_space[i + j * Nx][IMAG];
+            momentum_space[i*Ny + j][REAL] = 1. / (Nx * Ny) * momentum_space[i*Ny + j][REAL];
+            momentum_space[i*Ny + j][IMAG] = 1. / (Nx * Ny) * momentum_space[i*Ny + j][IMAG];
         }
+}
+
+void ops_clear()
+{
+    free(kx);
+    free(ky);
 }

@@ -13,10 +13,10 @@ CURRENT_POOL_SIZE=0
 Lx="100"
 Ly="100"
 dl="1"
-tf="10000"
-dt="1"
+tf="1000"
+dt="0.1"
 corr_len="10"
-V0="0.28"
+V0="0.5"
 tot_frames="100"
 
 #Total jobs

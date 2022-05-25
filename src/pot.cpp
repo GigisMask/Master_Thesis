@@ -35,18 +35,18 @@ void corr_pot(double *V, const double V0, double ksi, int Nx, int Ny, int Vix, i
                     else
                         n = j;
 
-                    g += exp(-((k - i) * (k - i) + (l - j) * (l - j)) * dl * dl / (2 * ksi * ksi)) * wn[m + n * Nx];
+                    g += exp(-((k - i) * (k - i) + (l - j) * (l - j)) * dl * dl / (2 * ksi * ksi)) * wn[m * Ny + n];
                 }
             }
             g *= V0 / (SQRT_PI * ksi);
 
-            V[k + l * Nx] = g;
+            V[k * Ny + l] = g;
         }
     }
     free(wn);
 }
 
-void random_values(double *wn, const double sigma, int Nx, int Ny, int Vix, int Viy, int Vnx, int Vny)
+void random_values(double *wn, const double wn_sigma, int Nx, int Ny, int Vix, int Viy, int Vnx, int Vny)
 {
     gsl_rng *r = gsl_rng_alloc(gsl_rng_taus);
     bool xCond, yCond;
@@ -58,9 +58,9 @@ void random_values(double *wn, const double sigma, int Nx, int Ny, int Vix, int 
         {
             yCond = j >= Viy && j < Viy + Vny;
             if (xCond && yCond)
-                wn[i + j * Nx] = gsl_ran_gaussian(r, sigma); // we suppose the random variate to be centered
+                wn[i * Ny + j] = gsl_ran_gaussian(r, wn_sigma); // we suppose the random variate to be centered
             else
-                wn[i + j * Nx] = 0.;
+                wn[i * Ny + j] = 0.;
         }
     }
     gsl_rng_free(r);

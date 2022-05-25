@@ -9,3 +9,4 @@ void normalize(fftw_complex *arr);
 void U_ev(fftw_complex *arr, double *V, fftw_complex *proc, fftw_plan pl_f, fftw_plan pl_b);
 
 void Uev_p(fftw_complex *momentum_space, fftw_complex *position_space, double *V, fftw_plan pl_position_momentum, fftw_plan pl_momentum_position);
+void ops_clear();

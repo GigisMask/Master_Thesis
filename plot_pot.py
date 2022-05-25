@@ -20,8 +20,11 @@ Z =  pot #pot[99].reshape(100,100)
 fig = plt.figure()
 ax = plt.axes()
 
+
 ax = fig.add_subplot(111, projection='3d')
 ax.plot_surface(X,Y,Z, cmap ="plasma")
+ax.set_xlabel('X')
+ax.set_ylabel('Y')
 #ax.set_zlim([-2,2])
 plt.show()
 #ax.scatter(X,Y,Z)
