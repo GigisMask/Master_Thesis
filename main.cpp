@@ -36,8 +36,8 @@ int main(int argc, char **argv)
         printf("Please introduce the arguments: x_size y_size dl_size tot_time dt_time corr_len V0 seed tot_frames(optional int) name(optional int)\n");
         Lx = 100; // voir pq lorsque L augmente il faut un tf plus grand
         Ly = 100;
-        dl = 1;
-        tf = 200;
+        dl = 0.1;
+        tf = 2;
         dt = 1;
         corr_len = 2; // Indirectly defines the correlation length between sites
         V0 = 0.1;
@@ -87,18 +87,20 @@ int main(int argc, char **argv)
     fftw_complex *Psi_p = fftw_alloc_complex(Nx * Ny); // Wavefunction matrix in the momentum space
     fftw_plan pl_position_momentum = fftw_plan_dft_2d(Nx, Ny, Psi, Psi_p, FFTW_FORWARD, FFTW_MEASURE);
     fftw_plan pl_momentum_position = fftw_plan_dft_2d(Nx, Ny, Psi_p, Psi, FFTW_BACKWARD, FFTW_MEASURE);
+
     /*----------------Initial wavefunction------------------*/
-    double k0[2] = {1, 0};
+    double k0[2] = {2./corr_len, 0};
     double r0[2] = {0, 0};
-    double sigma = 10;
+    double sigma = 2;
     // plane_wave(Psi, Nx, Ny, 1, k0, dl, r0, 100);
     //plane_wave_momentum(Psi_p, k0, Nx, Ny, dl);
+    
     gaussian_wavepacket(Psi_p, k0, r0, sigma, Nx, Ny, dl);
     //  Corriger et fixer k phys et non pas k num
 
     /* --------------File output parameters-----------------*/
     std::ostringstream dirName;
-    dirName << Lx << "x" << Ly << "_V0_" << V0 << "_" << corr_len;
+    dirName << int(Lx/dl) << "x" << int(Ly/dl) << "_" << dl << "_V0_" << V0 << "_" << corr_len;
     std::string fileName;
     if (atof(argv[10]) == 0)
         fileName = "debug";
@@ -142,12 +144,12 @@ int main(int argc, char **argv)
     }
     else
         std::cout << "Error creating output file" << std::endl;
-
+    
     ops_clear();
     free(V);
-    fftw_free(Psi);
-    fftw_free(Psi_p);
     fftw_destroy_plan(pl_position_momentum);
     fftw_destroy_plan(pl_momentum_position);
+    fftw_free(Psi);
+    fftw_free(Psi_p);
     return 0;
 }

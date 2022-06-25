@@ -22,10 +22,12 @@ void gaussian_wavepacket(fftw_complex *arr, double *k0, double *r0, double sigma
     double a, theta;
     double Coeff = sigma / sqrt(2. * M_PI);
     i = 0;
-    for (kx = -M_PI / dl; kx < M_PI / dl; kx += 2. * M_PI / (Nx * dl))
+    double dkx = 2. * M_PI / (Nx * dl);
+    double dky = 2. * M_PI / (Ny * dl);
+    for (kx = -M_PI / dl; abs(kx - M_PI / dl) > dkx / 2.; kx += dkx)
     {
         j = 0;
-        for (ky = -M_PI / dl; ky < M_PI / dl; ky += 2. * M_PI / (Ny * dl))
+        for (ky = -M_PI / dl; abs(ky - M_PI / dl) > dky / 2.; ky += dky)
         {
             // Amplitude and angle of the imaginary number
             a = Coeff * exp(-1. / 4. * sigma * sigma * ((kx - k0[0]) * (kx - k0[0]) + (ky - k0[1]) * (ky - k0[1])));

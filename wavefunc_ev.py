@@ -11,12 +11,23 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def main(argv):
-    x_size = int(argv[0])
-    y_size = int(argv[1])
-    V0 = float(argv[2])
-    corr_len = float(argv[3])
+    Lx = float(argv[0])
+    Ly = float(argv[1])
+    dl = float(argv[2])
+    V0 = float(argv[3])
+    corr_len = float(argv[4])
+    x_size = int(Lx/dl)
+    y_size = int(Ly/dl)
+    
     strV0 = ''
     strCorr_len = ''
+    strdl = ''
+
+    if dl == int(dl):
+        strdl = str(int(dl))
+    else:
+        strdl = str(dl)
+
     if V0 == int(V0):
         strV0 = str(int(V0))
     else:
@@ -26,7 +37,7 @@ def main(argv):
         strCorr_len = str(int(corr_len))
     else:
         strCorr_len = str(corr_len)
-    dataSpec = str(x_size) + "x" + str(y_size) + \
+    dataSpec = str(x_size) + "x" + str(y_size) + "_" + strdl + \
         "_V0_" + strV0 + "_" + strCorr_len
 
     Writer = animate.writers['ffmpeg']
@@ -35,7 +46,7 @@ def main(argv):
 
     data = np.genfromtxt("data/" + dataSpec + "/Mean/mean.dat",
                          dtype=np.complex128)  # + "/Mean/mean.dat")
-    frn = len(data[0,:])
+    frn = len(data[:,0])
 
     X = np.arange(0, x_size, 1)
     Y = np.arange(0, y_size, 1)
@@ -51,7 +62,7 @@ def main(argv):
         for t in range(frn):
             for i in range(x_size):
                 for j in range(y_size):
-                    psi[i, j, t] = (-1)**(i+j) * dat[i*y_size + j, t]
+                    psi[i, j, t] = (-1)**(i+j) * data[t, i*y_size + j]
             psi[:, :, t] = np.fft.ifft2(psi[:, :, t])
         psi2 = np.array([[[abs(psi[i, j, t])**2 for t in range(frn)] for j in range(y_size)]
                          for i in range(x_size)])
@@ -62,7 +73,7 @@ def main(argv):
         plot[0] = ax.plot_surface(
             X, Y, zarray[:, :, frame_number], cmap="plasma")
 
-    Psi_p2 = np.array([[[abs(data[i*y_size + j, k])**2 for k in range(frn)] for j in range(y_size)]
+    Psi_p2 = np.array([[[abs(data[k, i*y_size + j])**2 for k in range(frn)] for j in range(y_size)]
                        for i in range(x_size)])
     Psi2 = to_pos(data)
     Z = Psi_p2
@@ -72,11 +83,11 @@ def main(argv):
     ax.set_ylabel('Y')
 
     plot = [ax.plot_surface(
-        X, Y, Z[:, :, 500], cmap = "plasma", rstride=1, cstride=1)]
+        X, Y, Z[:, :, 50], cmap = "plasma", rstride=1, cstride=1)]
 
     #ax.set_zlim(0, 0.1)
     #ani = animate.FuncAnimation(fig, change_plot, frn,
-                                #fargs=(Z, plot), interval=1000 / fps)
+    #                            fargs=(Z, plot), interval=1000 / fps)
 
     # ax.axis('off')
     #ani.save('img/im.mp4', writer=writer)

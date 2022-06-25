@@ -12,11 +12,11 @@ CURRENT_POOL_SIZE=0
 #Job inputs
 Lx="100"
 Ly="100"
-dl="1"
-tf="1000"
-dt="0.1"
-corr_len="10"
-V0="0.5"
+dl="0.5"
+tf="200"
+dt="1"
+corr_len="2"
+V0="0.1"
 tot_frames="100"
 
 #Total jobs
@@ -35,7 +35,7 @@ process_job() {
 }
 
 computeMean(){
-  python3 statAnalysis.py $1 $2 $3 $4
+  python3 statAnalysis.py $1 $2 $3 $4 $5
 }
 
 # ------ This is the main program code --------
@@ -70,8 +70,8 @@ T2=$(date +%s)
 
 _log "All jobs completed in $((T2-T1)) seconds. Parent process exiting."
 _log "Computing mean..."
-computeMean $Lx $Ly $V0 $corr_len
+computeMean $Lx $Ly $dl $V0 $corr_len
 _log "Plotting mean..."
-python3 wavefunc_ev.py $Lx $Ly $V0 $corr_len
+python3 wavefunc_ev.py $Lx $Ly $dl $V0 $corr_len
 _log "Final output is written in $OUTPUT"
 exit 0
