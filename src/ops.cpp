@@ -117,7 +117,7 @@ void Uk_p(fftw_complex *momentum_space) // Applies the Uk operator to the arr ma
     }
 }
 
-void Uv_p(fftw_complex *real_space, fftw_complex *momentum_space, double *V, fftw_plan pl_position_momentum, fftw_plan pl_momentum_position)
+void Uv_p(fftw_complex *pos_space, fftw_complex *momentum_space, double *V, fftw_plan pl_position_momentum, fftw_plan pl_momentum_position)
 {
     int i, j;
     for (i = 0; i < Nx; i++)
@@ -133,11 +133,11 @@ void Uv_p(fftw_complex *real_space, fftw_complex *momentum_space, double *V, fft
             momentum_space[i*Ny + j][IMAG] *= sign;
         }
     }
-    fftw_execute(pl_momentum_position); // transformer en position
+    fftw_execute(pl_momentum_position); // transforme to pisition space
 
-    Uv(real_space, V); // Apply Uv operator
+    Uv(pos_space, V); // Apply Uv operator
 
-    fftw_execute(pl_position_momentum); // transformer en impulsion
+    fftw_execute(pl_position_momentum); // transform to momentum space
 
     for (i = 0; i < Nx; i++)
     {

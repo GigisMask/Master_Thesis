@@ -11,14 +11,23 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 def main(argv):
+    """""
     Lx = float(argv[0])
     Ly = float(argv[1])
     dl = float(argv[2])
     V0 = float(argv[3])
     corr_len = float(argv[4])
     x_size = int(Lx/dl)
+    y_size = int(Ly/dl)"""""
+
+    Lx = 20
+    Ly = 20
+    dl = 0.1
+    V0 = 0.1
+    corr_len = 2
+    x_size = int(Lx/dl)
     y_size = int(Ly/dl)
-    
+
     strV0 = ''
     strCorr_len = ''
     strdl = ''
@@ -46,7 +55,7 @@ def main(argv):
 
     data = np.genfromtxt("data/" + dataSpec + "/Mean/mean.dat",
                          dtype=np.complex128)  # + "/Mean/mean.dat")
-    frn = len(data[:,0])
+    frn = len(data[:, 0])
 
     X = np.arange(0, x_size, 1)
     Y = np.arange(0, y_size, 1)
@@ -79,20 +88,20 @@ def main(argv):
     Z = Psi_p2
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
-    ax.set_xlabel('X')
-    ax.set_ylabel('Y')
+    ax.set_xlabel('Kx')
+    ax.set_ylabel('Ky')
 
     plot = [ax.plot_surface(
-        X, Y, Z[:, :, 50], cmap = "plasma", rstride=1, cstride=1)]
+        X*corr_len, Y*corr_len, Z[:, :, 0], cmap="plasma", rstride=1, cstride=1)]
 
-    #ax.set_zlim(0, 0.1)
-    #ani = animate.FuncAnimation(fig, change_plot, frn,
-    #                            fargs=(Z, plot), interval=1000 / fps)
+    ani = animate.FuncAnimation(fig, change_plot, frn,
+                                fargs=(Z, plot), interval=1000 / fps)
 
-    # ax.axis('off')
-    #ani.save('img/im.mp4', writer=writer)
+    ax.axis('off')
+    ani.save('img/im.mp4', writer=writer)
 
     plt.show()
+    # plt.savefig("img/out.jpg")
 
 
 if __name__ == "__main__":

@@ -36,12 +36,12 @@ int main(int argc, char **argv)
         printf("Please introduce the arguments: x_size y_size dl_size tot_time dt_time corr_len V0 seed tot_frames(optional int) name(optional int)\n");
         Lx = 100; // voir pq lorsque L augmente il faut un tf plus grand
         Ly = 100;
-        dl = 0.1;
-        tf = 2;
-        dt = 1;
+        dl = 1;
+        tf = 10;
+        dt = 0.5;
         corr_len = 2; // Indirectly defines the correlation length between sites
-        V0 = 0.1;
-        tot_frames = tf / dt;
+        V0 = 0.01;
+        tot_frames = 100;
     }
     else
     {
@@ -63,6 +63,18 @@ int main(int argc, char **argv)
 
     int Nx = (int)Lx / dl; // Number of sites on the x-axis
     int Ny = (int)Ly / dl; // Number of sites on the y-axis
+
+    Lx *= M_PI * corr_len;
+    Ly *= M_PI * corr_len;
+    dl *= M_PI * corr_len;
+    tf *= corr_len * corr_len;
+    dt *= corr_len * corr_len;
+
+    int tmod = tf / (dt * tot_frames);
+
+    if (tmod == 0)
+        tmod = 1;
+
     if (Lx <= dl || Ly <= dl)
     {
         printf("x_size and y_size must be greater than dl_size");
@@ -89,18 +101,19 @@ int main(int argc, char **argv)
     fftw_plan pl_momentum_position = fftw_plan_dft_2d(Nx, Ny, Psi_p, Psi, FFTW_BACKWARD, FFTW_MEASURE);
 
     /*----------------Initial wavefunction------------------*/
-    double k0[2] = {2./corr_len, 0};
+    double kx0 = 1.5;
+    double k0[2] = {kx0, 0};
     double r0[2] = {0, 0};
-    double sigma = 2;
+    double Dk = kx0 / (sqrt(2));
     // plane_wave(Psi, Nx, Ny, 1, k0, dl, r0, 100);
-    //plane_wave_momentum(Psi_p, k0, Nx, Ny, dl);
-    
-    gaussian_wavepacket(Psi_p, k0, r0, sigma, Nx, Ny, dl);
+    // plane_wave_momentum(Psi_p, k0, Nx, Ny, dl);
+
+    gaussian_wavepacket(Psi_p, k0, r0, Dk, Nx, Ny, dl);
     //  Corriger et fixer k phys et non pas k num
 
     /* --------------File output parameters-----------------*/
     std::ostringstream dirName;
-    dirName << int(Lx/dl) << "x" << int(Ly/dl) << "_" << dl << "_V0_" << V0 << "_" << corr_len;
+    dirName << int(Lx / dl) << "x" << int(Ly / dl) << "_" << dl/(M_PI*corr_len) << "_V0_" << V0 << "_" << corr_len;
     std::string fileName;
     if (atof(argv[10]) == 0)
         fileName = "debug";
@@ -118,17 +131,18 @@ int main(int argc, char **argv)
 
     /*---------------------File output---------------------*/
     char a[32], b[32]; // used to output values in the form of a+b*j with j sqrt(-1) used for python postprocessing
+    int t_i = 0;
     if (ph_esp_file.is_open())
     {
         for (double t = 0; t <= tf; t += dt)
         {
-            if (((int)(t / dt)) % ((int)tf / tot_frames) == 0)
+            if (t_i % tmod == 0)
             {
                 for (int i = 0; i < Nx; i++)
                 {
                     for (int j = 0; j < Ny; j++)
                     {
-                        sprintf(a, "%.8f", Psi_p[i * Ny + j][REAL]); //10
+                        sprintf(a, "%.8f", Psi_p[i * Ny + j][REAL]); // 10
                         sprintf(b, "%+.8f", Psi_p[i * Ny + j][IMAG]);
                         ph_esp_file << a << b << "j"
                                     << "\t";
@@ -139,12 +153,13 @@ int main(int argc, char **argv)
             }
             if (t < tf)
                 Uev_p(Psi_p, Psi, V, pl_position_momentum, pl_momentum_position);
+            t_i++;
         }
         ph_esp_file.close();
     }
     else
         std::cout << "Error creating output file" << std::endl;
-    
+
     ops_clear();
     free(V);
     fftw_destroy_plan(pl_position_momentum);
